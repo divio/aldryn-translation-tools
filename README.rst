@@ -59,9 +59,10 @@ In contrast, if we had only done something like this::
             with override(language):
                 return reverse('fruit-detail', kwargs={'slug': slug})
 
-If the fruit `apple` has not yet been translated to FR it is possible that
+Then, if the fruit `apple` has not yet been translated to FR it is possible that
 you'll end up with the slug in a fallback langauge, and the rest of the URL in
-the desired language, so instead of getting a language-consistent fallback url::
+the requested language, so instead of getting a language-consistent fallback
+url::
 
     /en/apple/
 
@@ -70,5 +71,5 @@ You might get::
     /fr/apple/
 
 Which, at best, would be confusing for site visitors but more likely won't exist
-resulting in a NoReverseFound exception and which clearly is not respecting the
-fallback preferences set by the developer.
+resulting in a NoReverseFound exception or 404 and which clearly is not
+respecting the fallback preferences set by the developer.
