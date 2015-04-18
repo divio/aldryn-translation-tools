@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from cms.utils.i18n import get_current_language, get_fallback_languages
 
@@ -28,25 +29,22 @@ class TranslationHelperMixin(object):
                 "with a model defining get_available_languages() that returns "
                 "a list of available language codes. E.g., django-parler's "
                 "TranslatableModel.")
-        language_code = language_code or get_current_language()
-        if language_code not in object_languages:
-            # OK, we're going to have to use a fallback language
-            fallbacks = get_fallback_languages(language_code)
-            # Grab the first language from fallbacks that is also a known
-            # translation of the article.
-            language_code = next(
-                (lang for lang in fallbacks if lang in object_languages), None)
-            if not language_code:
-                # No fallbacks were available either
-                if any_language:
-                    # We're allowed to use any old language, grab the first one
-                    language_code = next(object_languages, None)
-                    if not language_code:
-                        # The object appears to have no translations at all.
-                        return (default, None)
-                else:
-                    return (default, None)
 
-        value = self.safe_translation_getter(
-            field, default=default, language_code=language_code)
-        return (value, language_code)
+        language_code = language_code or get_current_language()
+        site_id = getattr(settings, 'SITE_ID', None)
+        languages = [language_code] + get_fallback_languages(
+            language_code, site_id=site_id)
+
+        # Grab the first language that is common to our list of fallbacks and
+        # the list of available languages for this object.
+        if languages and object_languages:
+            language_code = next(
+                (lang for lang in languages if lang in object_languages), None)
+
+            if language_code:
+                value = self.safe_translation_getter(field,
+                    default=default, language_code=language_code)
+                return (value, language_code)
+
+        # No suitable translation exists
+        return (default, None)
