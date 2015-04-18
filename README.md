@@ -1,1 +1,0 @@
-# aldryn-translation-tools
