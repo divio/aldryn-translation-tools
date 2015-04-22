@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 from aldryn_translation_tools import __version__
 
 REQUIREMENTS = [
-    'django-cms>=3.0,<3.1'
+    'django-cms>=3.0'
 ]
 
 CLASSIFIERS = [
