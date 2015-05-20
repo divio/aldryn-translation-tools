@@ -1,0 +1,23 @@
+a.lang-code {
+    background-color: #BFBFBF; /* hsl(0, 0%, 75%); */
+    border-radius: 3px;
+    color: #fff !important;
+    display: inline-block;
+    font-size: 0.75em;
+    letter-spacing: 0.05em;
+    line-height: 1em;
+    margin-right: 0.25em;
+    padding: 3px;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+a.lang-code.active {
+    background-color: #3B99FC; /* hsl(211, 97%, 61%) */
+}
+a.lang-code.current {
+    background-color: #999999; /* hsl(0, 0%, 60%); */
+    font-weight: bold;
+}
+a.lang-code.current.active {
+    background-color: #3178BE; /* hsl(211, 59%, 48%) */
+}
