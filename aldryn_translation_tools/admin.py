@@ -25,8 +25,9 @@ class AllTranslationsMixin(object):
         available = list(obj.get_available_languages())
         current = get_current_language()
         langs = []
-        for code, title in settings.LANGUAGES:
+        for code, lang_name in settings.LANGUAGES:
             classes = ["lang-code", ]
+            title = lang_name
             if code == current:
                 classes += ["current", ]
             if code in available:
