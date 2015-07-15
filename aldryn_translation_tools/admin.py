@@ -24,8 +24,12 @@ class LinkedRelatedInlineMixin(object):
     extra = 0
 
     class ReverseLink:
+
+        allow_tags = True
+
         def __init__(self, display_link="link"):
             self.display_link = display_link
+            self.short_description = display_link
 
         def __call__(self, obj):
             model_name = obj.__class__.__name__.lower()
@@ -39,14 +43,6 @@ class LinkedRelatedInlineMixin(object):
                 title=_('Click to view or edit this {0}').format(
                     obj._meta.verbose_name),
                 link=getattr(obj, self.display_link))
-
-        @property
-        def short_description(self):
-            return self.display_link
-
-        @property
-        def allow_tags(self):
-            return True
 
     def __init__(self, parent_model, admin_site):
         self.original_fields = self.get_fields_list(None)
