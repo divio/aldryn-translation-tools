@@ -3,9 +3,89 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
+from django.utils.translation import ugettext as _
 
 from cms.utils.i18n import get_current_language
 from cms.utils.urlutils import admin_reverse
+
+
+class LinkedRelatedInlineMixin(object):
+    """
+    This InlineAdmin mixin links the first field to the row object's own admin
+    change form.
+
+    NOTE: If the first field is editable, it is undefined what will happen.
+    For best results, consider making all fields readonly (since they can be
+    edited with ease by following the link), and disabling the ability to add
+    new objects by overriding has_add_permission() on the inline to always
+    return false.
+    """
+
+    extra = 0
+
+    class ReverseLink:
+        def __init__(self, display_link="link"):
+            self.display_link = display_link
+
+        def __call__(self, obj):
+            model_name = obj.__class__.__name__.lower()
+            admin_link = admin_reverse(
+                "{app_label}_{model_name}_change".format(
+                    app_label=obj._meta.app_label.lower(),
+                    model_name=model_name,
+                ), args=(obj.id, ))
+            return '<a href="{admin_link}" title="{title}">{link}</a>'.format(
+                admin_link=admin_link,
+                title=_('Click to view or edit this {0}').format(
+                    obj._meta.verbose_name),
+                link=getattr(obj, self.display_link))
+
+        @property
+        def short_description(self):
+            return self.display_link
+
+        @property
+        def allow_tags(self):
+            return True
+
+    def __init__(self, parent_model, admin_site):
+        self.original_fields = self.get_fields_list(None)
+        if len(self.original_fields):
+            self.fields = ["reverse_link", ] + self.original_fields[1:]
+        else:
+            self.fields = "reverse_link"
+        self.reverse_link = LinkedRelatedInlineMixin.ReverseLink(
+            self.original_fields[0])
+        super(LinkedRelatedInlineMixin, self).__init__(
+            parent_model, admin_site)
+
+    def get_fields_list(self, request, obj=None):
+        """
+        Returns a list of the AdminModel's declared `fields`, or, constructs it
+        from the object, then, removes any `exclude`d items.
+        """
+        # ModelAdmin.get_fields came in Django 1.7, I believe
+        if hasattr(super(LinkedRelatedInlineMixin, self), "get_fields"):
+            fields = super(
+                LinkedRelatedInlineMixin, self).get_fields(request, obj)
+        elif self.fields:
+            fields = self.fields
+        else:
+            fields = [f.name for f in self.model._meta.local_fields]
+        if fields and self.exclude:
+            fields = [f for f in fields if f not in self.exclude]
+        if fields:
+            return list(fields)
+        else:
+            return None
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = super(
+            LinkedRelatedInlineMixin, self).get_readonly_fields(request, obj)
+        if "reverse_link" not in readonly_fields:
+            readonly_fields = list(readonly_fields) + ["reverse_link", ]
+        # We want all fields to be readonly for this inline
+        return readonly_fields
 
 
 class AllTranslationsMixin(object):
@@ -15,8 +95,8 @@ class AllTranslationsMixin(object):
     def all_translations(self, obj):
         """
         Adds a property to the list_display that lists all translations with
-        links directly to their change forms. Includes CSS to style the links to
-        looks like tags with color indicating current language, active and
+        links directly to their change forms. Includes CSS to style the links
+        to looks like tags with color indicating current language, active and
         inactive translations.
 
         A similar capability is in HVAD, and now there is this for
