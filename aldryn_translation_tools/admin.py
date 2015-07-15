@@ -50,8 +50,7 @@ class LinkedRelatedInlineMixin(object):
             self.fields = ["reverse_link", ] + self.original_fields[1:]
         else:
             self.fields = "reverse_link"
-        self.reverse_link = LinkedRelatedInlineMixin.ReverseLink(
-            self.original_fields[0])
+        self.reverse_link = self.ReverseLink(self.original_fields[0])
         super(LinkedRelatedInlineMixin, self).__init__(
             parent_model, admin_site)
 
