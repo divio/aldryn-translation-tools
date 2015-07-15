@@ -39,6 +39,19 @@ If you wish to put the tags into a different column, you can add
 "Languages" column will automatically be placed on the far right.
 
 
+admin.LinkedRelatedInlineMixin
+------------------------------
+
+This admin inline mixin links the first field to the row object's own admin
+change form.
+
+If the first field is editable, results are undefined but probably won't work
+as expected. For best results, consider making all fields readonly (since they
+can be edited with ease by following the link), and disabling the ability to
+add new objects by overriding has_add_permission() on the inline to always
+return ``False``.
+
+
 models.TranslationHelperMixin
 -----------------------------
 
