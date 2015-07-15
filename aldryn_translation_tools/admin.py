@@ -49,7 +49,7 @@ class LinkedRelatedInlineMixin(object):
         if len(self.original_fields):
             self.fields = ["reverse_link", ] + self.original_fields[1:]
         else:
-            self.fields = "reverse_link"
+            self.fields = ["reverse_link"]
         self.reverse_link = self.ReverseLink(self.original_fields[0])
         super(LinkedRelatedInlineMixin, self).__init__(
             parent_model, admin_site)
@@ -72,7 +72,7 @@ class LinkedRelatedInlineMixin(object):
         if fields:
             return list(fields)
         else:
-            return None
+            return []
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = super(
