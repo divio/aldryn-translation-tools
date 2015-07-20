@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
+from django.forms import widgets
 from django.utils.translation import ugettext as _
 
 from cms.utils.i18n import get_current_language
@@ -84,8 +85,12 @@ class LinkedRelatedInlineMixin(object):
 
 
 class AllTranslationsMixin(object):
-    class Media:
-        css = {'all': ('css/admin/all-translations-mixin.css', ), }
+
+    @property
+    def media(self):
+        return super(AllTranslationsMixin, self).media + widgets.Media(
+            css={'all': ('css/admin/all-translations-mixin.css', ), }
+        )
 
     def all_translations(self, obj):
         """
