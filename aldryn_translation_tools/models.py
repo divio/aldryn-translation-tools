@@ -11,7 +11,11 @@ except ImportError:
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from cms.utils.i18n import get_current_language, get_fallback_languages
+from cms.utils.i18n import (
+    get_current_language,
+    get_default_language,
+    get_fallback_languages,
+)
 
 
 class TranslatedAutoSlugifyMixin(object):
@@ -113,7 +117,7 @@ class TranslatedAutoSlugifyMixin(object):
         if not slug:
             # Build the "ideal slug" for this object as a starting point
             source = self.get_slug_source()
-            language = self.get_current_language()
+            language = self.get_current_language() or get_default_language()
             if source:
                 ideal_slug = force_text(slugify(source))
             else:
@@ -174,7 +178,8 @@ class TranslationHelperMixin(object):
                 "a list of available language codes. E.g., django-parler's "
                 "TranslatableModel.")
 
-        language_code = language_code or get_current_language()
+        language_code = (
+            language_code or get_current_language() or get_default_language())
         site_id = getattr(settings, 'SITE_ID', None)
         languages = [language_code] + get_fallback_languages(
             language_code, site_id=site_id)
