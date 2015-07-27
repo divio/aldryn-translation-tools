@@ -66,9 +66,9 @@ is that it is OK for two objects to use the same slug if the slugs are for
 different languages. So if this were used on a translated Article model, these
 URLs would be valid:
 
-    ``/en/pain`` - An article in EN about physical discomfort
+``/en/pain`` - An article in EN about physical discomfort
 
-    ``/fr/pain`` - An article in FR about bread
+``/fr/pain`` - An article in FR about bread
 
 Of course, this means that when resolving an object from its URL, care must
 be taken to factor in the language segment of the URL too.
