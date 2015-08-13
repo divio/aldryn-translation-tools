@@ -100,6 +100,7 @@ class TranslatedAutoSlugifyMixin(object):
             slug_max_length = max_length
         if idx_len:
             return slug_max_length - len(self.slug_separator) - idx_len
+        return slug_max_length
 
     def get_slug_source(self):
         """
