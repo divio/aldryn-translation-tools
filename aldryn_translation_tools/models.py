@@ -174,10 +174,10 @@ class TranslationHelperMixin(object):
             object_languages = self.get_available_languages()
             assert hasattr(object_languages, '__iter__')
         except [KeyError, AssertionError]:
-            raise ImproperlyConfigured("TranslationHelperMixin must be used "
-                "with a model defining get_available_languages() that returns "
-                "a list of available language codes. E.g., django-parler's "
-                "TranslatableModel.")
+            raise ImproperlyConfigured(
+                "TranslationHelperMixin must be used with a model defining"
+                "get_available_languages() that returns a list of available"
+                "language codes. E.g., django-parler's TranslatableModel.")
 
         language_code = (
             language_code or get_current_language() or get_default_language())
