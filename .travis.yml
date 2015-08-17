@@ -1,0 +1,34 @@
+language: python
+
+# Use container based infrastructure
+sudo: false
+
+env:
+  matrix:
+    - TOXENV=flake8
+    - TOXENV=py34-dj18-cms31
+    - TOXENV=py27-dj18-cms31
+    - TOXENV=py34-dj17-cms31
+    - TOXENV=py34-dj17-cms30
+    - TOXENV=py27-dj17-cms31
+    - TOXENV=py27-dj17-cms30
+    - TOXENV=py27-dj16-cms31
+    - TOXENV=py27-dj16-cms30
+    - TOXENV=py26-dj16-cms31
+    - TOXENV=py26-dj16-cms30
+
+cache:
+  directories:
+    - $HOME/.wheelhouse
+
+install:
+  - pip install tox
+  - pip install coveralls
+
+script:
+  - tox -e $TOXENV
+
+after_success: coveralls
+
+notifications:
+  webhooks: http://addons.us-iad-rs.aldryn.io/en/travis-endpoint/
