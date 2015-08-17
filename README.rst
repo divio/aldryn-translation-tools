@@ -1,6 +1,8 @@
 Aldryn Translation Tools
 ========================
 
+|Coverage status|
+
 A collection of shared helpers and mixins for translated django-CMS projects.
 
 To use, install it into your project using pip::
@@ -216,3 +218,7 @@ You might get::
 Which, at best, would be confusing for site visitors but more likely won't exist
 resulting in a NoReverseFound exception or 404 and which clearly is not
 respecting the fallback preferences set by the developer.
+
+
+.. |Coverage Status| image:: https://img.shields.io/coveralls/aldryn/aldryn-translation-tools.svg
+   :target: https://coveralls.io/r/aldryn/aldryn-translation-tools
