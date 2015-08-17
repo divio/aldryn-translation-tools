@@ -11,3 +11,4 @@ local_settings.py
 *.sublime-project
 *.sublime-workspace
 env/
+.tox
