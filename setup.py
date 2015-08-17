@@ -3,7 +3,8 @@ from setuptools import setup, find_packages
 from aldryn_translation_tools import __version__
 
 REQUIREMENTS = [
-    'django-cms>=3.0'
+    'django-cms>=3.0.12',
+    'django-parler>=1.4',
 ]
 
 CLASSIFIERS = [
