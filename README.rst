@@ -1,7 +1,7 @@
 Aldryn Translation Tools
 ========================
 
-|Coverage status|
+|PyPI Version| |Coverage status|
 
 A collection of shared helpers and mixins for translated django-CMS projects.
 
@@ -220,5 +220,7 @@ resulting in a NoReverseFound exception or 404 and which clearly is not
 respecting the fallback preferences set by the developer.
 
 
-.. |Coverage Status| image:: https://img.shields.io/coveralls/aldryn/aldryn-translation-tools.svg
-   :target: https://coveralls.io/r/aldryn/aldryn-translation-tools
+.. |PyPI Version| image:: https://badge.fury.io/py/aldryn-translation-tools.svg
+   :target: https://pypi.python.org/pypi/aldryn-translation-tools
+.. |Coverage status| image:: https://travis-ci.org/aldryn/aldryn-translation-tools.svg
+   :target: https://travis-ci.org/aldryn/aldryn-translation-tools
