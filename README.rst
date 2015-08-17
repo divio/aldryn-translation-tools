@@ -1,7 +1,7 @@
 Aldryn Translation Tools
 ========================
 
-|PyPI Version| |Coverage status|
+|PyPI Version| |Build Status| |Coverage Status|
 
 A collection of shared helpers and mixins for translated django-CMS projects.
 
@@ -222,5 +222,8 @@ respecting the fallback preferences set by the developer.
 
 .. |PyPI Version| image:: https://badge.fury.io/py/aldryn-translation-tools.svg
    :target: https://pypi.python.org/pypi/aldryn-translation-tools
-.. |Coverage status| image:: https://travis-ci.org/aldryn/aldryn-translation-tools.svg
+.. |Build Status| image:: https://travis-ci.org/aldryn/aldryn-translation-tools.svg
    :target: https://travis-ci.org/aldryn/aldryn-translation-tools
+.. |Coverage status| image:: https://coveralls.io/repos/aldryn/aldryn-translation-tools/badge.svg?branch=master&service=github
+   :target: https://coveralls.io/github/aldryn/aldryn-translation-tools?branch=master
+
