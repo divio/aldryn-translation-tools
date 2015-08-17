@@ -1,6 +1,5 @@
 coverage>=3.7.1
-djangocms-helper
-django-cms>=3.0.12
+https://github.com/nephila/djangocms-helper/archive/develop.zip
 django-parler>=1.4
 flake8
 python-coveralls>=2.4.2
