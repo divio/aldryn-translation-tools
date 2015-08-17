@@ -8,6 +8,6 @@ build/*
 *.egg-info/*
 local_settings.py
 .coverage
-aldryn-faq.sublime-project
-aldryn-faq.sublime-workspace
+*.sublime-project
+*.sublime-workspace
 env/
