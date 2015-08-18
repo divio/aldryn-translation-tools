@@ -2,16 +2,24 @@
 
 from __future__ import unicode_literals
 
+from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, override
 
-from aldryn_translation_tools.models import TranslatedAutoSlugifyMixin
+from aldryn_translation_tools.models import (
+    TranslatedAutoSlugifyMixin,
+    TranslationHelperMixin,
+)
 from parler.models import TranslatableModel, TranslatedFields
+
+from .managers import SimpleManager
 
 
 @python_2_unicode_compatible
-class Simple(TranslatedAutoSlugifyMixin, TranslatableModel):
+class Simple(TranslatedAutoSlugifyMixin, TranslationHelperMixin,
+             TranslatableModel):
     slug_source_field_name = 'name'
 
     translations = TranslatedFields(
@@ -19,9 +27,33 @@ class Simple(TranslatedAutoSlugifyMixin, TranslatableModel):
         slug=models.SlugField(max_length=64, blank=True, default='')
     )
 
+    objects = SimpleManager()
+
+    def get_absolute_url(self, language=None):
+        if not language:
+            language = getattr(settings, 'LANGUAGE_CODE')
+        slug, language = self.known_translation_getter(
+            'slug', None, language_code=language)
+        kwargs = {'slug': slug}
+
+        with override(language):
+            return reverse('simple-detail', kwargs=kwargs)
+
     def __str__(self):
         return self.safe_translation_getter(
             'name', default="Simple: {0}".format(self.pk))
+
+
+@python_2_unicode_compatible
+class Untranslated(models.Model):
+    name = models.CharField(max_length=64)
+    slug = models.SlugField(max_length=64, blank=True, default='')
+
+    def get_absolute_url(self):
+        return reverse('untranslated-detail', kwargs={'slug': self.slug})
+
+    def __str__(self):
+        return "Untranslated: {0}".format(self.name)
 
 
 @python_2_unicode_compatible

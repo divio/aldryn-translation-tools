@@ -7,7 +7,7 @@ HELPER_SETTINGS = {
     'TIME_ZONE': 'Europe/Zurich',
     'INSTALLED_APPS': [
         'parler',
-        'test_project',
+        'test_addon',
     ],
     'DATABASES': {
         'default': {

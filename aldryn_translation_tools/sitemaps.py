@@ -45,6 +45,7 @@ class I18NSitemap(Sitemap):
         Override's Sitemap's constructor to accept a language code as
         a parameter.
         """
+        super(I18NSitemap, self).__init__()
         self.language = language or settings.LANGUAGES[0][0]
 
     def location(self, item):
