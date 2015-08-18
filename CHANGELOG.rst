@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+0.1.2 (2015-08-18)
+------------------
+
+* Adds I18NSitemap helper class
+* adds get_admin_url() and get_object_from_request() utility methods
+
 0.1.1 (2015-08-13)
 ------------------
 
