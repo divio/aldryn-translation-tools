@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _, override
+from django.utils.translation import ugettext_lazy as _, override, get_language
 
 from aldryn_translation_tools.models import (
     TranslatedAutoSlugifyMixin,
@@ -30,8 +30,7 @@ class Simple(TranslatedAutoSlugifyMixin, TranslationHelperMixin,
     objects = SimpleManager()
 
     def get_absolute_url(self, language=None):
-        if not language:
-            language = getattr(settings, 'LANGUAGE_CODE')
+        language = language or get_language()
         slug, language = self.known_translation_getter(
             'slug', None, language_code=language)
         kwargs = {'slug': slug}
