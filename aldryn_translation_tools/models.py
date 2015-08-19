@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 try:
     from django.utils.encoding import force_text
-except ImportError:
+except ImportError:  # pragma: no cover
     from django.utils.encoding import force_unicode as force_text
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
@@ -157,6 +157,7 @@ class TranslatedAutoSlugifyMixin(object):
 
 
 class TranslationHelperMixin(object):
+
     def known_translation_getter(self, field, default=None,
                                  language_code=None, any_language=False):
         """

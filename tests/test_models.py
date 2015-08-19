@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.test import TransactionTestCase
 from django.utils.translation import ugettext_lazy as _
 
-from test_project.models import Complex, Simple, Unconventional
+from test_addon.models import Complex, Simple, Unconventional
 
 
 class TestTranslatableAutoSlugifyMixin(TransactionTestCase):
