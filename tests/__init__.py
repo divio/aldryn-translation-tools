@@ -8,7 +8,6 @@ import string
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.sites.models import Site
-from django.db import IntegrityError
 from django.test import RequestFactory, TransactionTestCase
 from django.utils.translation import override
 
@@ -17,6 +16,7 @@ from cms.models import Title
 from cms.utils import get_cms_setting
 from cms.utils.i18n import get_language_list
 from djangocms_helper.utils import create_user
+from parler.utils.context import switch_language
 
 from test_addon.models import Simple, Untranslated
 
@@ -33,20 +33,6 @@ class TestUtilityMixin(object):
         except:
             new_obj = obj.__class__.objects.get(id=obj.id)
         return new_obj
-
-    @staticmethod
-    def mktranslation(obj, lang, **kwargs):
-        """Simple method that adds a translation to an existing object."""
-        try:
-            obj.set_current_language(lang)
-        except:
-            try:
-                obj.translate(lang)
-            except IntegrityError:
-                pass
-        for k, v in kwargs.items():
-            setattr(obj, k, v)
-        obj.save()
 
     """Just adds some common test utilities to the testing class."""
     @staticmethod
@@ -81,22 +67,32 @@ class SimpleTestMixin(TestUtilityMixin):
         }
     }
 
+    simple1 = None
+    simple2 = None
+    untranslated1 = None
+
     def setUp(self):
         super(SimpleTestMixin, self).setUp()
         with override('de'):
             self.simple1 = Simple()
             self.simple1.name = self.data['simple1']['de']['name']
             self.simple1.save()
-            self.mktranslation(self.simple1, 'en', **self.data['simple1']['en'])
-            self.mktranslation(self.simple1, 'fr', **self.data['simple1']['fr'])
 
             self.simple2 = Simple()
             self.simple2.name = self.data['simple2']['de']['name']
             self.simple2.save()
-            self.mktranslation(self.simple2, 'en', **self.data['simple2']['en'])
-            self.mktranslation(self.simple2, 'fr', **self.data['simple2']['fr'])
-        self.untranslated1 = Untranslated(**self.data['untranslated1'])
-        self.untranslated1.save()
+
+        for lc in ['en', 'fr']:
+            with switch_language(self.simple1, lc):
+                self.simple1.name = self.data['simple1'][lc]['name']
+                self.simple1.save()
+            with switch_language(self.simple2, lc):
+                self.simple2.name = self.data['simple2'][lc]['name']
+                self.simple2.save()
+
+        if not self.untranslated1:
+            self.untranslated1 = Untranslated(**self.data['untranslated1'])
+            self.untranslated1.save()
 
 
 class CMSRequestBasedTest(TestUtilityMixin, TransactionTestCase):
@@ -122,16 +118,18 @@ class CMSRequestBasedTest(TestUtilityMixin, TransactionTestCase):
             'root page',
             self.template,
             self.language,
-            published=True
+            published=True,
         )
         self.page = api.create_page(
-            'Simple',
+            'Simple Page',
             self.template,
             self.language,
             published=True,
             parent=self.root_page,
             apphook='SimpleApp',
+            apphook_namespace='simple',
         )
+
         self.placeholder = self.page.placeholders.all()[0]
         self.request = self.get_request('en')
 
@@ -140,13 +138,12 @@ class CMSRequestBasedTest(TestUtilityMixin, TransactionTestCase):
                 api.create_title(language, page.get_slug(), page)
                 page.publish(language)
 
-    @staticmethod
-    def get_request(language=None, url="/"):
+    @classmethod
+    def get_request(cls, language=None, url="/"):
         """
         Returns a Request instance populated with cms specific attributes.
         """
-        request_factory = RequestFactory(HTTP_HOST=settings.ALLOWED_HOSTS[0])
-        request = request_factory.get(url)
+        request = cls.request_factory.get(url)
         request.session = {}
         request.LANGUAGE_CODE = language or settings.LANGUAGE_CODE
         # Needed for plugin rendering.

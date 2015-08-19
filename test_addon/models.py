@@ -37,7 +37,7 @@ class Simple(TranslatedAutoSlugifyMixin, TranslationHelperMixin,
         kwargs = {'slug': slug}
 
         with override(language):
-            return reverse('simple-detail', kwargs=kwargs)
+            return reverse('simple:simple-detail', kwargs=kwargs)
 
     def __str__(self):
         return self.safe_translation_getter(
@@ -50,7 +50,8 @@ class Untranslated(models.Model):
     slug = models.SlugField(max_length=64, blank=True, default='')
 
     def get_absolute_url(self):
-        return reverse('untranslated-detail', kwargs={'slug': self.slug})
+        return reverse(
+            'simple:untranslated-detail', kwargs={'slug': self.slug})
 
     def __str__(self):
         return "Untranslated: {0}".format(self.name)

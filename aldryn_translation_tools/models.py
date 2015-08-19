@@ -157,6 +157,7 @@ class TranslatedAutoSlugifyMixin(object):
 
 
 class TranslationHelperMixin(object):
+
     def known_translation_getter(self, field, default=None,
                                  language_code=None, any_language=False):
         """
@@ -171,7 +172,8 @@ class TranslationHelperMixin(object):
         # fallbacks, the developer should ensure that their project's Parler
         # settings match the CMS settings.
         try:
-            object_languages = self.get_available_languages()
+            object_languages = self.get_available_languages(
+                include_unsaved=True)
             assert hasattr(object_languages, '__iter__')
         except [KeyError, AssertionError]:
             raise ImproperlyConfigured(

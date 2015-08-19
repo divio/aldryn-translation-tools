@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 HELPER_SETTINGS = {
     'TIME_ZONE': 'Europe/Zurich',
     'INSTALLED_APPS': [
+        'aldryn_apphook_reload',
         'parler',
         'test_addon',
     ],
@@ -52,11 +53,11 @@ HELPER_SETTINGS = {
             {'code': 'en', },
         ),
         'default': {
-            'fallback': 'en',
+            'fallbacks': ['en'],
             'hide_untranslated': True,  # PLEASE DO NOT CHANGE THIS
         }
     },
-
+    'PARLER_ENABLE_CACHING': False,
 }
 
 

@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 from aldryn_translation_tools import __version__
 
 REQUIREMENTS = [
+    'aldryn-apphooks-config',
     'django-cms>=3.0.12',
     'django-parler>=1.4',
 ]

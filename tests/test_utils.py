@@ -69,7 +69,8 @@ class TestToolbarHelpers(SimpleTransactionTestCase):
         self.simple1.set_current_language('en')
         slug_url = self.simple1.get_absolute_url('en')
         pk_url = slug_url.replace(
-            '/{0}/'.format(self.simple1.slug), '/{0}/'.format(self.simple1.pk))
+            '/{0}/'.format(self.simple1.slug),
+            '/{0}/'.format(self.simple1.pk))
 
         for url in [slug_url, pk_url, ]:
             request = self.request_factory.get(url)
@@ -81,20 +82,9 @@ class TestToolbarHelpers(SimpleTransactionTestCase):
             simple = get_object_from_request(Simple, request)
             self.assertTrue(simple.pk, self.simple1.pk)
 
-        # Now test that it correctly returns None if we're not on a view page.
-        url = self.root_page.get_absolute_url()
-        request = self.request_factory.get(url)
-        request.LANGUAGE_CODE = 'en'
-        request.current_page = self.root_page
-        request.user = self.user
-        request.resolver_match = resolve(request.path)
-
-        simple = get_object_from_request(Simple, request)
-        self.assertTrue(simple is None)
-
     def test_get_obj_from_empty_request(self):
         """ Test that we get None if the request doesn't contain an object. """
-        request = self.request_factory.get(reverse('simple-root'))
+        request = self.request_factory.get(reverse('simple:simple-root'))
         request.LANGUAGE_CODE = 'en'
         request.current_page = self.page
         request.user = self.user
@@ -111,6 +101,7 @@ class TestToolbarHelpers(SimpleTransactionTestCase):
 
         for url in [slug_url, pk_url, ]:
             request = self.request_factory.get(url)
+            request.LANGUAGE_CODE = 'en'
             request.current_page = self.page
             request.user = self.user
             request.resolver_match = resolve(request.path)
