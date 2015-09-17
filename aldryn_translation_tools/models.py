@@ -120,6 +120,7 @@ class TranslatedAutoSlugifyMixin(object):
             source = self.get_slug_source()
             language = self.get_current_language() or get_default_language()
             if source:
+                source = force_text(source)
                 ideal_slug = force_text(slugify(source))
             else:
                 # For some reason, the slug came back empty, use the default
