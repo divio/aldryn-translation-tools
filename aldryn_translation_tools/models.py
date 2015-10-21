@@ -2,13 +2,14 @@
 
 from __future__ import unicode_literals
 
+from slugify import slugify
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 try:
     from django.utils.encoding import force_text
 except ImportError:  # pragma: no cover
     from django.utils.encoding import force_unicode as force_text
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from cms.utils.i18n import (
@@ -53,6 +54,14 @@ class TranslatedAutoSlugifyMixin(object):
     # The translated field to derive a slug from. If `get_slug_source()` is
     # overridden in the model, overriding `get_slug_default` is recommended.
     slug_source_field_name = None
+    # filters that would be used to determine slug uniqueness, would be
+    # populated with slug_field_name.
+    raw_slug_filter_string = 'translations__{0}'
+
+    # python-slugify option for smart truncate
+    word_boundary = False
+    # python-slugify option for smart truncate
+    save_order = True
 
     def get_slug_default(self):
         """
@@ -113,47 +122,94 @@ class TranslatedAutoSlugifyMixin(object):
         return "{slug}{sep}{idx}".format(
             slug=slug, sep=self.slug_separator, idx=idx)
 
-    def save(self, **kwargs):
-        slug = getattr(self, self.slug_field_name, None)
-        if not slug:
-            # Build the "ideal slug" for this object as a starting point
-            source = self.get_slug_source()
-            language = self.get_current_language() or get_default_language()
-            if source:
-                source = force_text(source)
-                ideal_slug = force_text(slugify(source))
-            else:
-                # For some reason, the slug came back empty, use the default
-                ideal_slug = force_text(self.get_slug_default())
+    def _get_existing_slug(self):
+        """
+        Get slug if it is set on object, slug is taken from
+        `self.slug_field_name` field.
+        """
+        return getattr(self, self.slug_field_name, None)
 
-            # Trim the length of the ideal slug to the limit allowed the field
+    def slugify(self, text, max_length=None):
+        """
+        Generate slug using appropriate slugification utility.
+        """
+        if max_length is None:
             max_length = self.get_slug_max_length()
-            slug = ideal_slug[:max_length]
+        slug = slugify(text,
+                       max_length=max_length,
+                       word_boundary=self.word_boundary,
+                       save_order=self.save_order,
+                       separator=self.slug_separator)
+        return slug
 
-            # Build the queryset we will be using considering options and the
-            # object's state
-            qs = self.__class__.objects.language(language)
-            if not self.slug_globally_unique:
-                qs = qs.filter(
-                    translations__language_code=language)
-            if self.pk:
-                qs = qs.exclude(pk=self.pk)
+    def _get_ideal_slug(self):
+        """Build the "ideal slug" for this object as a starting point"""
+        source = self.get_slug_source()
+        if source:
+            source = force_text(source)
+            ideal_slug = force_text(self.slugify(source))
+        else:
+            # For some reason, the slug came back empty, use the default
+            ideal_slug = force_text(self.get_slug_default())
 
-            # Check if the resulting slug is currently in use, if not, use it.
-            # Otherwise, add a separator and an index until we find an
-            # unused combination.
-            idx = 1
-            candidate = slug
-            slug_filter = 'translations__{0}'.format(self.slug_field_name)
-            while qs.filter(**{slug_filter: candidate}).exists():
-                candidate = self._get_candidate_slug(slug, idx)
-                if len(candidate) > max_length:
-                    max_length = self.get_slug_max_length(len(str(idx)))
-                    slug = ideal_slug[:max_length]
-                    candidate = self._get_candidate_slug(slug, idx)
-                idx += 1
-            setattr(self, self.slug_field_name, candidate)
+        # Trim the length of the ideal slug to the limit allowed the field
+        max_length = self.get_slug_max_length()
+        return ideal_slug[:max_length]
 
+    def _get_slug_queryset(self, lookup_model=None):
+        """
+        Build the queryset we will be using considering options and the
+        object's state.
+        lookup model - model manager to build base queryset. If none
+        self.__class__ would be used.
+        """
+        language = self.get_current_language() or get_default_language()
+        if lookup_model is None:
+            lookup_model = self.__class__
+
+        qs = lookup_model.objects.language(language)
+        if not self.slug_globally_unique:
+            qs = qs.filter(
+                translations__language_code=language)
+        if self.pk:
+            qs = qs.exclude(pk=self.pk)
+        return qs
+
+    def make_new_slug(self, slug=None, qs=None):
+        """
+        Generate a slug that meets requirements.
+        :param qs: queryset to check uniqueness,
+                   if None - self._get_slug_queryset() queryset will be used
+        :param slug: candidate slug, new slug would be generated from this
+                     value, if None - self._get_ideal_slug() would be used
+        :return (str): slug
+        """
+
+        if qs is None:
+            qs = self._get_slug_queryset()
+        if slug is None:
+            # Build the "ideal slug" for this object as a starting point
+            slug = self._get_ideal_slug()
+        # initial setup
+        idx = 1
+        candidate = slug
+        max_length = self.get_slug_max_length()
+        slug_filter = self.raw_slug_filter_string.format(self.slug_field_name)
+        # Check if the resulting slug is currently in use, if not, use it.
+        # Otherwise, add a separator and an index until we find an
+        # unused combination.
+        while qs.filter(**{slug_filter: candidate}).exists():
+            if len(candidate) > max_length:
+                max_length = self.get_slug_max_length(len(str(idx)))
+            candidate = self._get_candidate_slug(slug[:max_length], idx)
+            idx += 1
+        return candidate
+
+    def save(self, **kwargs):
+        slug = self._get_existing_slug()
+        if not slug:
+            slug = self.make_new_slug()
+            setattr(self, self.slug_field_name, slug)
         return super(TranslatedAutoSlugifyMixin, self).save(**kwargs)
 
 

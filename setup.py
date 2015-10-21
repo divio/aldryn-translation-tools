@@ -5,6 +5,8 @@ from aldryn_translation_tools import __version__
 REQUIREMENTS = [
     'django-cms>=3.0.12',
     'django-parler>=1.4',
+    'Unidecode>=0.4.18,<=0.5',
+    'python-slugify>=1.1.4,<=1.2',
 ]
 
 CLASSIFIERS = [

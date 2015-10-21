@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+0.1.3 (XXXX-XX-XX)
+------------------
+
+* Move to python-slugify instead of Django slugify for slug generation
+
 0.1.2 (2015-08-18)
 ------------------
 
