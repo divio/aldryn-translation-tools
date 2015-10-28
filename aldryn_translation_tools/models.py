@@ -175,6 +175,20 @@ class TranslatedAutoSlugifyMixin(object):
             qs = qs.exclude(pk=self.pk)
         return qs
 
+    def _slug_exists(self, slug, slug_filter=None, qs=None):
+        """
+        Check if slug exists in the given queryset.
+        If slug_filter is None it would be created from
+        self.raw_slug_filter_string and self.slug_field_name
+        """
+
+        if qs is None:
+            qs = self._get_slug_queryset()
+        if slug_filter is None:
+            slug_filter = self.raw_slug_filter_string.format(
+                self.slug_field_name)
+        return qs.filter(**{slug_filter: slug}).exists()
+
     def make_new_slug(self, slug=None, qs=None):
         """
         Generate a slug that meets requirements.
@@ -185,20 +199,17 @@ class TranslatedAutoSlugifyMixin(object):
         :return (str): slug
         """
 
-        if qs is None:
-            qs = self._get_slug_queryset()
-        if slug is None:
+        if not slug:
             # Build the "ideal slug" for this object as a starting point
             slug = self._get_ideal_slug()
         # initial setup
         idx = 1
         candidate = slug
         max_length = self.get_slug_max_length()
-        slug_filter = self.raw_slug_filter_string.format(self.slug_field_name)
         # Check if the resulting slug is currently in use, if not, use it.
         # Otherwise, add a separator and an index until we find an
         # unused combination.
-        while qs.filter(**{slug_filter: candidate}).exists():
+        while self._slug_exists(candidate, qs=qs):
             if len(candidate) > max_length:
                 max_length = self.get_slug_max_length(len(str(idx)))
             candidate = self._get_candidate_slug(slug[:max_length], idx)
@@ -207,8 +218,8 @@ class TranslatedAutoSlugifyMixin(object):
 
     def save(self, **kwargs):
         slug = self._get_existing_slug()
-        if not slug:
-            slug = self.make_new_slug()
+        if not slug or self._slug_exists(slug):
+            slug = self.make_new_slug(slug=slug)
             setattr(self, self.slug_field_name, slug)
         return super(TranslatedAutoSlugifyMixin, self).save(**kwargs)
 
