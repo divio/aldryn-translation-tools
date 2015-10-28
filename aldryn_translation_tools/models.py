@@ -185,7 +185,8 @@ class TranslatedAutoSlugifyMixin(object):
         if qs is None:
             qs = self._get_slug_queryset()
         if slug_filter is None:
-            slug_filter = self.raw_slug_filter_string.format(self.slug_field_name)
+            slug_filter = self.raw_slug_filter_string.format(
+                self.slug_field_name)
         return qs.filter(**{slug_filter: slug}).exists()
 
     def make_new_slug(self, slug=None, qs=None):
