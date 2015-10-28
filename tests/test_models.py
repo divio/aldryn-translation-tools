@@ -83,6 +83,34 @@ class TestTranslatableAutoSlugifyMixin(TransactionTestCase):
 
         self.assertEquals(simple_en.slug, simple_fr.slug)
 
+    def test_slug_unique_for_language(self):
+        simple_en_1 = Simple()
+        simple_en_1.set_current_language('en')
+        simple_en_1.name = 'SimpleOne'
+        simple_en_1.save()
+        # make another instance with same name
+        simple_en_2 = Simple()
+        simple_en_2.set_current_language('en')
+        simple_en_2.name = 'SimpleOne'
+        simple_en_2.save()
+        # slugs should not be same.
+        self.assertNotEquals(simple_en_1.slug, simple_en_2.slug)
+
+    def test_slug_unique_for_language_if_slug_is_the_same(self):
+        simple_en_1 = Simple()
+        simple_en_1.set_current_language('en')
+        simple_en_1.name = 'SimpleOne'
+        simple_en_1.slug = 'simpleone'
+        simple_en_1.save()
+        # make another instance with same name
+        simple_en_2 = Simple()
+        simple_en_2.set_current_language('en')
+        simple_en_2.name = 'SimpleOne'
+        simple_en_2.slug = 'simpleone'
+        simple_en_2.save()
+        # slugs should not be same.
+        self.assertNotEquals(simple_en_1.slug, simple_en_2.slug)
+
     def test_simple_slug_default(self):
         # First test that the default works
         simple = Simple()
