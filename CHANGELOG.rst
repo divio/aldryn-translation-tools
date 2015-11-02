@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-0.2.1 (20XX-XX-XX)
+0.2.1 (2015-11-02)
 ------------------
 
 * Fix slug uniqueness check in TranslatedAutoSlugifyMixin
