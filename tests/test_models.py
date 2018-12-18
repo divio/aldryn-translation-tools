@@ -50,7 +50,7 @@ class TestTranslatableAutoSlugifyMixin(TransactionTestCase):
                 simple.set_current_language('en')
                 simple.name = 'Simple'
                 simple.save()
-        except:
+        except Exception:
             self.fail()
         Simple.slug_max_length = None
 

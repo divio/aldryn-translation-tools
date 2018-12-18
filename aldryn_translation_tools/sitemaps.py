@@ -3,8 +3,8 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.core.urlresolvers import NoReverseMatch
 from django.contrib.sitemaps import Sitemap
+from django.urls import NoReverseMatch
 from django.utils import translation
 
 

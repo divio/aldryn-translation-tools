@@ -2,15 +2,17 @@
 
 from __future__ import unicode_literals
 
+from django.utils.translation import get_language_from_request
+
+from cms.utils.urlutils import admin_reverse
+
+from parler.models import TranslatableModel
+
+
 try:
     from urllib import urlencode
 except ImportError:  # pragma: no cover
     from urllib.parse import urlencode
-
-from django.utils.translation import get_language_from_request
-
-from cms.utils.urlutils import admin_reverse
-from parler.models import TranslatableModel
 
 
 def get_admin_url(action, action_args=[], **url_args):
@@ -61,8 +63,7 @@ def get_object_from_request(model, request,
             translated_fields = model._parler_meta.get_translated_fields()
         except AttributeError:
             translated_fields = []
-        if (issubclass(model, TranslatableModel) and
-                slug_url_kwarg in translated_fields):
+        if issubclass(model, TranslatableModel) and slug_url_kwarg in translated_fields:
             return mgr.active_translations(language, **filter_kwargs).first()
         else:
             # OK, do it the normal way.

@@ -10,6 +10,15 @@ To use, install it into your project using pip::
     pip install aldryn-translation-tools
 
 
+Contributing
+------------
+
+We're grateful to all contributors who have helped create and maintain this package.
+
+Contributors are listed at `contributions page
+<https://github.com/aldryn/aldryn-translation-tools/graphs/contributors>`_.
+
+
 admin.AllTranslationsMixin
 --------------------------
 

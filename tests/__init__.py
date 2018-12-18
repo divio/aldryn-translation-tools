@@ -13,11 +13,11 @@ from django.utils.translation import override
 
 from cms import api
 from cms.models import Title
-from cms.utils import get_cms_setting
+from cms.utils.conf import get_cms_setting
 from cms.utils.i18n import get_language_list
+
 from djangocms_helper.utils import create_user
 from parler.utils.context import switch_language
-
 from test_addon.models import Simple, Untranslated
 
 
@@ -30,7 +30,7 @@ class TestUtilityMixin(object):
         """
         try:
             new_obj = obj.__class__.objects.language(language).get(id=obj.id)
-        except:
+        except Exception:
             new_obj = obj.__class__.objects.get(id=obj.id)
         return new_obj
 
@@ -43,7 +43,7 @@ class TestUtilityMixin(object):
         try:
             # In Python3, this method has been renamed (poorly)
             return self.assertCountEqual(a, b)
-        except:
+        except Exception:
             # In 2.6, assertItemsEqual() doesn't sort first
             return self.assertItemsEqual(sorted(a), sorted(b))
 
@@ -120,6 +120,7 @@ class CMSRequestBasedTest(TestUtilityMixin, TransactionTestCase):
             self.language,
             published=True,
         )
+
         self.page = api.create_page(
             'Simple Page',
             self.template,
@@ -165,7 +166,7 @@ class CMSRequestBasedTest(TestUtilityMixin, TransactionTestCase):
         try:
             page_title = Title.objects.get(title=base_title)
             return page_title.page.get_draft_object()
-        except:
+        except Exception:
             pass
 
         # No? Okay, create one.

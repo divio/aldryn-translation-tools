@@ -65,5 +65,6 @@ def run():
     from djangocms_helper import runner
     runner.cms('aldryn_translation_tools')
 
+
 if __name__ == "__main__":
     run()

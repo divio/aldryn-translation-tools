@@ -1,18 +1,11 @@
-# -*- coding: utf-8 -*-
+from django.conf.urls import url
 
-from __future__ import unicode_literals
+from .views import SimpleDetailView, SimpleListView, SimpleRootView, UntranslatedDetailView
 
-from django.conf.urls import patterns, url
 
-from .views import (
-    SimpleDetailView,
-    SimpleListView,
-    SimpleRootView,
-    UntranslatedDetailView,
-)
+app_name = 'simple'
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^empty-view', SimpleRootView.as_view(), name='simple-root'),
     url(r'^simple/$', SimpleListView.as_view(), name='simple-list'),
 
@@ -26,4 +19,4 @@ urlpatterns = patterns(
         name='untranslated-detail'),
     url(r'^untranslated/(?P<slug>\w[-\w]*)/$', UntranslatedDetailView.as_view(),
         name='untranslated-detail'),
-)
+]

@@ -10,6 +10,10 @@ from cms.apphook_pool import apphook_pool
 
 class SimpleApp(CMSApp):
     name = _('Simple')
-    urls = ['test_addon.urls']
+    app_name = 'simple'
+
+    def get_urls(self, page=None, language=None, **kwargs):
+        return ["test_addon.urls"]
+
 
 apphook_pool.register(SimpleApp)

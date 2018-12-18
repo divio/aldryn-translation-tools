@@ -1,8 +1,0 @@
-coverage>=3.7.1
-aldryn-apphook-reload
-https://github.com/nephila/djangocms-helper/archive/develop.zip
-django-parler>=1.4
-flake8
-python-coveralls>=2.4.2
-six
-tox

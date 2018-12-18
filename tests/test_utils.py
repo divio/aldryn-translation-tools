@@ -2,15 +2,17 @@
 
 from __future__ import unicode_literals
 
-from django.core.urlresolvers import resolve, reverse
-from django.test import TransactionTestCase
+import sys
 
-from aldryn_translation_tools.utils import (
-    get_admin_url,
-    get_object_from_request,
-)
+from django.conf import settings
+from django.test import TransactionTestCase
+from django.urls import clear_url_caches, resolve, reverse
+
+from cms.appresolver import clear_app_resolvers
 
 from test_addon.models import Simple, Untranslated
+
+from aldryn_translation_tools.utils import get_admin_url, get_object_from_request
 
 from . import SimpleTransactionTestCase
 
@@ -28,27 +30,27 @@ class TestUtils(TransactionTestCase):
         # With pattern args and a single URL parameter
         kwargs = {'alpha': 'beta', }
         url = get_admin_url(change_action, args, **kwargs)
-        self.assertIn('/admin/auth/user/1/?alpha=beta', url)
+        self.assertIn('/en/admin/auth/user/1/change/?alpha=beta', url)
 
         # With pattern args and two URL parameters
         kwargs = {'alpha': 'beta', 'gamma': 'delta', }
         url = get_admin_url(change_action, args, **kwargs)
-        self.assertIn('/admin/auth/user/1/?alpha=beta&gamma=delta', url)
+        self.assertIn('/en/admin/auth/user/1/change/?alpha=beta&gamma=delta', url)
 
         # With pattern args and 3 URL parameters
         kwargs = {'a': 'b', 'g': 'd', 'e': 'z', }
         url = get_admin_url(change_action, args, **kwargs)
-        self.assertIn('/admin/auth/user/1/?a=b&e=z&g=d', url)
+        self.assertIn('/en/admin/auth/user/1/change/?a=b&e=z&g=d', url)
 
         # With pattern args and numerical URL params
         kwargs = {'a': 1, 'g': 2, 'e': 3, }
         url = get_admin_url(change_action, args, **kwargs)
-        self.assertIn('/admin/auth/user/1/?a=1&e=3&g=2', url)
+        self.assertIn('/en/admin/auth/user/1/change/?a=1&e=3&g=2', url)
 
         # With pattern args and odd-typed URL params
         kwargs = {'a': [], 'g': {}, 'e': None}
         url = get_admin_url(change_action, args, **kwargs)
-        self.assertIn('/en/admin/auth/user/1/?a=%5B%5D&e=None&g=%7B%7D', url)
+        self.assertIn('/en/admin/auth/user/1/change/?a=%5B%5D&e=None&g=%7B%7D', url)
 
         # No pattern args...
         add_action = 'auth_user_add'
@@ -63,6 +65,24 @@ class TestUtils(TransactionTestCase):
 
 
 class TestToolbarHelpers(SimpleTransactionTestCase):
+
+    def setUp(self):
+        super(TestToolbarHelpers, self).setUp()
+        self.reload_urls()
+
+    def reload_urls(self):
+        url_modules = [
+            'cms.urls',
+            'test_addon.urls',
+            settings.ROOT_URLCONF,
+        ]
+
+        clear_app_resolvers()
+        clear_url_caches()
+
+        for module in url_modules:
+            if module in sys.modules:
+                del sys.modules[module]
 
     def test_get_obj_from_request(self):
         """ Test that we can get the object from the request. """

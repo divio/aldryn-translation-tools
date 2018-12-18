@@ -15,7 +15,7 @@ class SimpleRootView(TemplateView):
 
 class SimpleListView(ListView):
     model = Simple
-    http_method_names = ['get', ]
+    http_method_names = ['get']
 
 
 class SimpleDetailView(TranslatableSlugMixin, DetailView):

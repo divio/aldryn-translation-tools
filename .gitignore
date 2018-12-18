@@ -12,3 +12,4 @@ local_settings.py
 *.sublime-workspace
 env/
 .tox
+.DS_Store

@@ -2,21 +2,14 @@
 
 from __future__ import unicode_literals
 
-from slugify import slugify
-
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-try:
-    from django.utils.encoding import force_text
-except ImportError:  # pragma: no cover
-    from django.utils.encoding import force_unicode as force_text
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
-from cms.utils.i18n import (
-    get_current_language,
-    get_default_language,
-    get_fallback_languages,
-)
+from cms.utils.i18n import get_current_language, get_default_language, get_fallback_languages
+
+from slugify import slugify
 
 
 class TranslatedAutoSlugifyMixin(object):
@@ -85,7 +78,7 @@ class TranslatedAutoSlugifyMixin(object):
             source_field = trans_meta.get_field(
                 self.slug_source_field_name)
             field_name = getattr(source_field, 'verbose_name')
-        except:
+        except Exception:
             field_name = _('name')
 
         slug_default = _("{0}-without-{1}").format(
@@ -226,8 +219,7 @@ class TranslatedAutoSlugifyMixin(object):
 
 class TranslationHelperMixin(object):
 
-    def known_translation_getter(self, field, default=None,
-                                 language_code=None, any_language=False):
+    def known_translation_getter(self, field, default=None, language_code=None, any_language=False):
         """
         This is meant to act like HVAD/Parler's safe_translation_getter() but
         respects the fallback preferences as defined in
@@ -262,8 +254,8 @@ class TranslationHelperMixin(object):
 
             if language_code:
                 value = self.safe_translation_getter(field,
-                    default=default, language_code=language_code)
-                return (value, language_code)
+                                                     default=default, language_code=language_code)
+                return value, language_code
 
         # No suitable translation exists
-        return (default, None)
+        return default, None

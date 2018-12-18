@@ -2,16 +2,14 @@
 
 from __future__ import unicode_literals
 
-from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _, override, get_language
+from django.utils.translation import get_language, override, ugettext_lazy as _
 
-from aldryn_translation_tools.models import (
-    TranslatedAutoSlugifyMixin,
-    TranslationHelperMixin,
-)
 from parler.models import TranslatableModel, TranslatedFields
+
+from aldryn_translation_tools.models import TranslatedAutoSlugifyMixin, TranslationHelperMixin
 
 from .managers import SimpleManager
 
